@@ -21,7 +21,7 @@ export default function DiscardScreen() {
       </View>
       <View style={styles.grid}>
         {mahjong.map((mahjong, index) => (
-          <TouchableOpacity onPress={() => router.push(mahjong.rotate)} key={index} style={[styles.button, { backgroundColor: mahjong.color }]}>
+          <TouchableOpacity onPress={() => router.replace(mahjong.rotate)} key={index} style={[styles.button, { backgroundColor: mahjong.color }]}>
             <FontAwesome6 name={mahjong.icon} size={40} color="white" />
             <Text style={styles.buttonText}>{mahjong.name}</Text>
           </TouchableOpacity>
@@ -34,11 +34,10 @@ export default function DiscardScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#2c1c59',
+    backgroundColor: '#228b22',
     paddingTop: 50,
     paddingLeft: 16,
     paddingRight: 16,
-
   },
   header: {
     flexDirection: 'row',

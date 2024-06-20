@@ -1,35 +1,59 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { View, Text } from '@/components/Themed'
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { fetchAPIdata } from '@/components/FetchAPIdata';
+import { FontAwesome6 } from '@expo/vector-icons';
+
+interface DataItem {
+  name: string;
+  population: number;
+  color: string;
+  legendFontColor: string;
+  legendFontSize: number;
+}
 
 const screenWidth = Dimensions.get('window').width;
 
-const data = [
-  { name: 'Photoshop', population: 15, color: '#FF6384', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Illustrator', population: 25, color: '#36A2EB', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Dreamweaver', population: 20, color: '#FFCE56', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Sketch App', population: 12, color: '#4BC0C0', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Adobe XD', population: 18, color: '#9966FF', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-];
-
 const chartConfig = {
-  backgroundGradientFrom: '#2c1c59',
-  backgroundGradientTo: '#2c1c59',
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
 };
 
-export default function PieChartScreen() {
+export default function DiscardScreen() {
+  const [topData, setTopData] = useState<DataItem[]>([]);
+  const [sortedData, setSortedData] = useState<DataItem[]>([]);
+
+  const fetchData = async () => {
+    const data = await fetchAPIdata('pon');
+    setTopData(data.topData);
+    setSortedData(data.sortedData);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <LinearGradient style={styles.container} colors={['#EA5455', '#FEB692']} start={{x: 0.1, y: 0.3}} end={{x: 0.9, y: 0.9}}>
-      <Text style={styles.title}>ポン予測</Text>
+    <LinearGradient
+      style={styles.container}
+      colors={['#EA5455', '#FEB692']}
+      start={{ x: 0.1, y: 0.3 }}
+      end={{ x: 0.9, y: 0.9 }}
+    >
+      <View style={styles.titlecontainer}>
+        <Text style={styles.title}>ポン予測</Text>
+        <TouchableOpacity onPress={fetchData}>
+          <FontAwesome6 name="hand-paper" size={24} color="#000000" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.overlay}>
         <PieChart
-          data={data}
+          data={topData}
           width={screenWidth - 32}
           height={220}
           chartConfig={chartConfig}
@@ -39,34 +63,39 @@ export default function PieChartScreen() {
           absolute
         />
       </View>
-      <View style={styles.legendContainer}>
-        {data.map((item, index) => (
+      <ScrollView style={styles.legendContainer}>
+        {sortedData.map((item, index) => (
           <View key={index} style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: item.color }]} />
             <Text style={styles.legendLabel}>{item.name}</Text>
             <Text style={styles.legendValue}>{item.population}%</Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
   },
+  titlecontainer: {
+    flexDirection: 'row',
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    marginTop: 50,
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  title: {
+    color: '#f0f0f0',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 20,
-  },
-  title: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 50,
-    marginBottom: 20,
   },
   legendContainer: {
     marginTop: 20,
