@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { URL } from '@/components/!url';
 
 interface DataItem {
   name: string;
@@ -13,8 +13,10 @@ interface FetchData {
   sortedData: DataItem[];
 }
 
-export async function fetchAPIdata(call: string): Promise<FetchData> {
-  const response = await fetch(`http://192.168.3.38:8000/${call}`, {
+export async function fetchAPIdata(): Promise<FetchData> {
+  //const response = await fetch(`http://192.168.3.59:8000/${call}`, {
+  const response = await fetch(`http://${URL}:8000/mahjongAPI?mode=0`, {
+
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

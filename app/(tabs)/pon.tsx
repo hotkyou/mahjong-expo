@@ -4,7 +4,7 @@ import { View, Text } from '@/components/Themed'
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { fetchAPIdata } from '@/components/FetchAPIdata';
+import { fetchCalldata } from '@/components/FetchCalldata';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 interface DataItem {
@@ -24,19 +24,29 @@ const chartConfig = {
   barPercentage: 0.5,
 };
 
-export default function DiscardScreen() {
-  const [topData, setTopData] = useState<DataItem[]>([]);
-  const [sortedData, setSortedData] = useState<DataItem[]>([]);
+export default function PonScreen() {
+  const [kanData, setPonData] = useState<any>();
 
   const fetchData = async () => {
-    const data = await fetchAPIdata('pon');
-    setTopData(data.topData);
-    setSortedData(data.sortedData);
+    const data = await fetchCalldata(1);
+    //console.log(data);
+    setPonData(data);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  let message = '';
+  if (kanData >= 0.75) {
+    message = '鳴きましょう！';
+  } else if (kanData >= 0.5) {
+    message = 'かなり鳴いても良いかも！';
+  } else if (kanData >= 0.25) {
+    message = '少し考えましょう！';
+  } else {
+    message = '鳴かないでください！';
+  }
 
   return (
     <LinearGradient
@@ -52,26 +62,15 @@ export default function DiscardScreen() {
         </TouchableOpacity>
       </View>
       <View style={styles.overlay}>
-        <PieChart
-          data={topData}
-          width={screenWidth - 32}
-          height={220}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          absolute
-        />
+        <Text style={styles.call}>
+          {Math.round(kanData * 100)}%
+        </Text>
+        {kanData !== null && (
+          <Text style={styles.call}>
+            {message}
+          </Text>
+        )}
       </View>
-      <ScrollView style={styles.legendContainer}>
-        {sortedData.map((item, index) => (
-          <View key={index} style={styles.legendItem}>
-            <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-            <Text style={styles.legendLabel}>{item.name}</Text>
-            <Text style={styles.legendValue}>{item.population}%</Text>
-          </View>
-        ))}
-      </ScrollView>
     </LinearGradient>
   );
 }
@@ -97,29 +96,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 20,
   },
-  legendContainer: {
-    marginTop: 20,
-    backgroundColor: "rgba(0, 0, 0, 0)",
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: "rgba(0, 0, 0, 0)",
-  },
-  legendColor: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-    borderRadius: 10,
-  },
-  legendLabel: {
-    color: 'white',
-    fontSize: 16,
-    flex: 1,
-  },
-  legendValue: {
-    color: 'white',
-    fontSize: 16,
+  call: {
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 20,
   },
 });

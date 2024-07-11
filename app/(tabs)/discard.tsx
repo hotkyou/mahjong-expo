@@ -26,16 +26,32 @@ const chartConfig = {
 export default function DiscardScreen() {
   const [topData, setTopData] = useState<DataItem[]>([]);
   const [sortedData, setSortedData] = useState<DataItem[]>([]);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   const fetchData = async () => {
-    const data = await fetchAPIdata('discard');
+    const data = await fetchAPIdata();
     setTopData(data.topData);
     setSortedData(data.sortedData);
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [intervalId]);
+
+  const startFetching = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    } else {
+      const id = setInterval(fetchData, 2000);
+      setIntervalId(id);
+    }
+  };
 
   return (
     <LinearGradient
@@ -46,7 +62,7 @@ export default function DiscardScreen() {
     >
       <View style={styles.titlecontainer}>
         <Text style={styles.title}>打牌予測</Text>
-        <TouchableOpacity onPress={fetchData}>
+        <TouchableOpacity onPress={startFetching}>
           <FontAwesome6 name="hand-paper" size={24} color="#000000" />
         </TouchableOpacity>
       </View>

@@ -30,7 +30,7 @@ export default function DiscardScreen() {
   const [sortedData, setSortedData] = useState<DataItem[]>([]);
 
   const fetchData = async () => {
-    const data = await fetchAPIdata('chii');
+    const data = await fetchAPIdata();
     setTopData(data.topData);
     setSortedData(data.sortedData);
   };

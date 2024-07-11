@@ -15,7 +15,7 @@ const mahjong = [
 export default function DiscardScreen() {
   const router = useRouter();
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>麻雀AIシステムv0.01</Text>
       </View>
@@ -27,7 +27,7 @@ export default function DiscardScreen() {
           </TouchableOpacity>
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
