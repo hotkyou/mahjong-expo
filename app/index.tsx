@@ -9,7 +9,7 @@ const mahjong = [
   { name: 'ポン', icon: "meteor", color: '#98b0d4', rotate: "(tabs)/pon" },
   { name: 'カン', icon: "cloud", color: '#d4b5d4', rotate: "(tabs)/kan" },
   { name: 'リーチ', icon: "rainbow", color: '#d4c3a5', rotate: "(tabs)/reach" },
-  { name: '設定', icon: "gear", color: '#d48787', rotate: "settings" },
+  { name: 'ALL', icon: "gear", color: '#d48787', rotate: "settings" },
 ];
 
 export default function DiscardScreen() {
