@@ -8,7 +8,8 @@ import { fetchCalldata } from '@/components/FetchCalldata';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import Svg, { Rect, Text as SText } from 'react-native-svg';
 
-const mahjongPath = MahjongPath();
+const mahjongPath: Record<string, any> = MahjongPath();
+const mahjongTiles = Object.keys(mahjongPath);
 
 export default function SettingsScreen() {
   const [discard, setDiscard] = useState<any>([]);  // 捨て牌
@@ -25,18 +26,19 @@ export default function SettingsScreen() {
   const fetchData = async () => {
     const discardData = await fetchCalldata(0);
     const pon = await fetchCalldata(1);
-    //const chi = await fetchCalldata(2);
+    const chi = await fetchCalldata(2);
     const kan = await fetchCalldata(3);
-    const tehaiData = await fetchCalldata(4);
-    //const reach = await fetchCalldata(5);
+    const reach = await fetchCalldata(4);
+    const tehaiData = await fetchCalldata(5);
+    
     setDiscard(discardData);
     setPonData(pon);
-    //setChiData(chi);
+    setChiData(chi);
     setKanData(kan);
+    setReachData(reach);
     setTehaiData(tehaiData);
-    //setReachData(reach);
 
-    //console.log(pon);
+    //console.log(reach);
   };
 
   useEffect(() => {
@@ -61,6 +63,13 @@ export default function SettingsScreen() {
 
   const maxPopulation = Math.max(...discard.map((item: any) => item.population));
 
+  const maxReach = Math.max(...reachData);
+  //console.log(maxReach);
+  const maxIndex = reachData.indexOf(maxReach);
+
+  const maxChii = Math.max(...chiData);
+  const maxIndexChii = chiData.indexOf(maxChii);
+
   return (
     <LinearGradient
       style={styles.container}
@@ -70,28 +79,29 @@ export default function SettingsScreen() {
     >
       <View style={styles.row}>
         <View style={styles.overlay}>
-          <Text style={styles.overlayText}>ポン</Text>
+          <Text style={styles.overlayText}>ポン：</Text>
           <Text style={styles.overlayText}>
             {(ponData * 100).toFixed(0)}%
           </Text>
         </View>
         <View style={styles.overlay}>
-          <Text style={styles.overlayText}>チー</Text>
+          <Text style={styles.overlayText}>チー：</Text>
+          <Image style={styles.imageCall} source={mahjongPath[mahjongTiles[maxIndexChii]]} />
+          <Image style={styles.imageCall} source={mahjongPath[mahjongTiles[maxIndexChii + 1]]} />
+          <Image style={styles.imageCall} source={mahjongPath[mahjongTiles[maxIndexChii + 2]]} />
         </View>
         <View style={styles.overlay}>
-          <Text style={styles.overlayText}>カン</Text>
+          <Text style={styles.overlayText}>カン：</Text>
           <Text style={styles.overlayText}>
             {(kanData * 100).toFixed(0)}%
           </Text>
         </View>
         <View style={styles.overlay}>
-          <Text style={styles.overlayText}>リーチ</Text>
-          
-          <Text style={styles.overlayText}>
-          </Text>
+          <Text style={styles.overlayText}>リーチ：</Text>
+          <Image style={styles.imageCall} source={mahjongPath[mahjongTiles[maxIndex]]} />
         </View>
       </View>
-      <View style={styles.overlay}>
+      <View style={styles.overlay2}>
         {tehaiData.map((tile: string, index: number) => (
           <View key={index} style={styles.imageContainer}>
             {dataObject[tile] !== undefined && (
@@ -145,7 +155,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  overlay2: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
     justifyContent: 'center',
     marginHorizontal: 5,
   },
@@ -160,6 +178,14 @@ const styles = StyleSheet.create({
   },
   graph: {
     top: 0,
+  },
+  imageCall: {
+    width: 30,
+    height: 40,
+    borderRadius: 4,
+    resizeMode: 'contain',
+    backgroundColor: '#fff',
+    margin: 1
   },
   image: {
     width: 45,
